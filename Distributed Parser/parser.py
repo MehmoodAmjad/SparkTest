@@ -165,8 +165,9 @@ class parser():
     # FGet location from the extracted news 
     def Get_location(self, read_more, header):
         if len(self.index) <= 0:
-            # Loading data set of ECP Election commission of Pakistan 
-            self.load_cities("Alldata_refined.csv")
+            # Loading data set of ECP Election commission of Pakistan
+            file_path = os.getcwd() + "/alldata_refined.csv" 
+            self.load_cities(file_path)
         # Clean header of news
         header = self.clean(header)
         # Split header
@@ -254,7 +255,8 @@ class parser():
         self.city = max(cities, key=cities.get, default="null")
         if self.city == 0:
             print(cities)
-        df = pd.read_csv("Alldata_refined.csv")
+        file_path = os.getcwd() + "/alldata_refined.csv"
+        df = pd.read_csv(file_path)
         # Droping NULL rows
         df = df.dropna()
         # Extracting location col
