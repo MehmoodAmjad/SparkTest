@@ -166,7 +166,8 @@ class parser():
     def Get_location(self, read_more, header):
         if len(self.index) <= 0:
             # Loading data set of ECP Election commission of Pakistan
-            file_path = os.getcwd() + "/alldata_refined.csv" 
+            # file_path = os.getcwd() + "/alldata_refined.csv" 
+            file_path = "/opt/bitnami/spark/alldata_refined.csv" 
             self.load_cities(file_path)
         # Clean header of news
         header = self.clean(header)
@@ -255,7 +256,8 @@ class parser():
         self.city = max(cities, key=cities.get, default="null")
         if self.city == 0:
             print(cities)
-        file_path = os.getcwd() + "/alldata_refined.csv"
+        # file_path = os.getcwd() + "/alldata_refined.csv"
+        file_path = "/opt/bitnami/spark/alldata_refined.csv"
         df = pd.read_csv(file_path)
         # Droping NULL rows
         df = df.dropna()
