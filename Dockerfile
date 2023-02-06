@@ -11,4 +11,4 @@ RUN [ "python", "-c", "import nltk; nltk.download('wordnet')" ]
 RUN apt update -y
 RUN apt install maven -y
 # RUN [ "python", "-c", "import importlib; import pathlib; print(pathlib.Path(importlib.util.find_spec('sutime').origin).parent / 'pom.xml')" ]
-RUN mvn dependency:copy-dependencies -DoutputDirectory=./jars -f $(python -c 'import importlib; import pathlib; print(pathlib.Path(importlib.util.find_spec("sutime").origin).parent / "pom.xml")')
+RUN mvn dependency:copy-dependencies -DoutputDirectory=./jars -f $(python -c 'from importlib import util; import pathlib; print(pathlib.Path(util.find_spec("sutime").origin).parent / "pom.xml")')
