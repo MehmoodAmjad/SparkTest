@@ -279,53 +279,79 @@ class parser():
                 self.city = "null"
         self.cities = cities
 
-    # Our main focus time extraction function. Takes in a dataframe of news article and returns the focus location in a dictionary
-    def Get_Time(self, data, sutime, timeData):
+# Our main focus time extraction function. Takes in a dataframe of news article and returns the focus location in a dictionary
+    def Get_Time(self, data, timeData):
         tags = []
-        # Parse the header, summary and details individually
-        headerParse = sutime.parse(data[1], reference_date=data[6])
-        headerParse = self.addTextType(headerParse, "Header")
+        settings = {'PREFER_DAY_OF_MONTH': 'first', 'RELATIVE_BASE': datetime.strptime(data[6], "%Y-%m-%d")}
+        # timeData[data[0]] = dict()
+        # headerParse = list(datefinder.find_dates(data[1], index=True, source=True, first="month", base_date=datetime.datetime.strptime(data[6], "%Y-%m-%d")))
+        headers = data[1].split("\n")
+        # print(headers)
+        headerParse = [search_dates(header, settings=settings) for header in headers]
+        headerParse1 = search_dates(data[1], settings=settings)
+        headerParse.append(headerParse1)
+
+        summaries = data[2].split("\n")
+        # print(summaries)
+        summaryParse = [search_dates(summary, settings=settings) for summary in summaries]
+        # summaryParse = list(datefinder.find_dates(data[2], index=True, source=True, first="month", base_date=datetime.datetime.strptime(data[6], "%Y-%m-%d")))
         
-        summaryParse = sutime.parse(data[2], reference_date=data[6])
-        summaryParse = self.addTextType(summaryParse, "Summary")
-        #  Remove the publication date from the details so as to not interfere with our algorithm
+        summaryParse1 = search_dates(data[2], settings=settings)
+        summaryParse.append(summaryParse1)
+
+        # # headerParse = sutime.parse(data[1], reference_date=data[6])
+        # # headerParse = addTextType(headerParse, "Header")
+        
+        # # summaryParse = sutime.parse(data[2], reference_date=data[6])
+        # # summaryParse = addTextType(summaryParse, "Summary")
+        
         details = data[3]
         lines = details.split('\n')
         del lines[-2]
-        details = '\n'.join(lines)
-        detailsParse = sutime.parse(details, reference_date=data[6])
-        detailsParse = self.addTextType(detailsParse, "Details")
-        # Creat tags of all the elements and combine into one
-        
+        details = '\n'.join(lines)    
+        # print(lines)
+        detailsParse = [search_dates(detail1, settings=settings) for detail1 in lines]
+        # detailsParse = [item for sublist in detailsParse for item in sublist]
+        # detailsParse = list(datefinder.find_dates(details, index=True, source=True, first="month", base_date=datetime.datetime.strptime(data[6], "%Y-%m-%d")))
+        detailsParse1 = search_dates(details, settings=settings)
+        detailsParse.append(detailsParse1)
         tags = headerParse + summaryParse + detailsParse
-        try:
-            # Assign weights to tags
+        
+        # # # print(tags)
 
+        # timeData["tags"] = tags
+        tags = [tag for tag in tags if isinstance(tag, type(None)) == False]
+        tags = [item for sublist in tags for item in sublist]
+
+
+        try:
             tags = self.createTags(tags)
+        # # # print(tags)
             tags = sorted(tags, key=lambda x: x.weight, reverse=True)
-            # Use the highest weighted tag as focusTime
             timeData["focusTime"] = tags[0].date.date().strftime('%Y-%m-%d')
         except:
-            # If no tags found, assign creation date as focusTime
             timeData["focusTime"] = data[6]
         
-#         # Create the rest of the dictionary using the text and tags of each
-#         timeData["CreationDate"] = data[6]
-        
-#         timeData["Header"] = dict()
-#         timeData["Header"]["Text"] = data[1]
-#         timeData["Header"]["Tags"] = headerParse
-        
-#         timeData['Summary'] = dict()
-#         timeData['Summary']["Text"] = data[2]
-#         timeData['Summary']["Tags"] = summaryParse
-        
-#         timeData['Details'] = dict()
-#         timeData['Details']["Text"] = details
-#         timeData['Details']["Tags"] = detailsParse
+        timeData["CreationDate"] = data[6]
 
-#         timeData['Link'] = data[4]
-#         timeData['Category'] = data[5]
+        timeData["Header"] = dict()
+        timeData["Header"]["Text"] = data[1]
+        # timeData["Header"]["Tags"] = headerParse
+        # # timeData["Header"]["Tags1"] = headerParse1
+
+        
+        timeData['Summary'] = dict()
+        timeData['Summary']["Text"] = data[2]
+        # timeData['Summary']["Tags"] = summaryParse
+        # # timeData['Summary']["Tags1"] = summaryParse1
+        
+        timeData['Details'] = dict()
+        timeData['Details']["Text"] = details
+        # timeData['Details']["Tags"] = detailsParse
+        # timeData['Details']["Tags1"] = detailsParse1
+        
+        timeData['Link'] = data[4]
+        timeData['Category'] = data[5]
         return timeData
 
     # Main function which executes the get location to extract focus location
@@ -337,9 +363,8 @@ class parser():
     def informationExtractor(self, dataframe):
             results = dict()
             city = self.read(dataframe)
-            sutime = SUTime()
             if city != "null":
-              results = self.Get_Time(list(df.loc[i]), sutime, results)
+              results = self.Get_Time(list(df.loc[i]), results)
             results["focusLocation"] = city
             print("The Results from the parser:")
             print(results)
