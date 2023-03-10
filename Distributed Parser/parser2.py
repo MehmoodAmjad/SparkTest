@@ -12,7 +12,6 @@ import pandas as pd
 import glob
 import pathlib
 import json
-from sutime import SUTime
 from datetime import datetime
 import datefinder
 import numpy as np
@@ -20,7 +19,8 @@ import csv
 import os
 from pyspark.sql import *
 from pyspark import *
-# from timetag import TimeTag
+from dateparser.search import search_dates
+from timetag import TimeTag
 
 '''
 Timetag is a tag that is extracted from the NEWS documents. 
@@ -282,21 +282,21 @@ class parser():
 # Our main focus time extraction function. Takes in a dataframe of news article and returns the focus location in a dictionary
     def Get_Time(self, data, timeData):
         tags = []
-        settings = {'PREFER_DAY_OF_MONTH': 'first', 'RELATIVE_BASE': datetime.strptime(data[6], "%Y-%m-%d")}
+        settings = {'PREFER_DAY_OF_MONTH': 'first', 'RELATIVE_BASE': datetime.strptime(data["CreationDate"], "%Y-%m-%d")}
         # timeData[data[0]] = dict()
         # headerParse = list(datefinder.find_dates(data[1], index=True, source=True, first="month", base_date=datetime.datetime.strptime(data[6], "%Y-%m-%d")))
-        headers = data[1].split("\n")
+        headers = data["Header"].split("\n")
         # print(headers)
         headerParse = [search_dates(header, settings=settings) for header in headers]
-        headerParse1 = search_dates(data[1], settings=settings)
+        headerParse1 = search_dates(data["Header"], settings=settings)
         headerParse.append(headerParse1)
 
-        summaries = data[2].split("\n")
+        summaries = data["Summary"].split("\n")
         # print(summaries)
         summaryParse = [search_dates(summary, settings=settings) for summary in summaries]
         # summaryParse = list(datefinder.find_dates(data[2], index=True, source=True, first="month", base_date=datetime.datetime.strptime(data[6], "%Y-%m-%d")))
         
-        summaryParse1 = search_dates(data[2], settings=settings)
+        summaryParse1 = search_dates(data["Summary"], settings=settings)
         summaryParse.append(summaryParse1)
 
         # # headerParse = sutime.parse(data[1], reference_date=data[6])
@@ -305,7 +305,7 @@ class parser():
         # # summaryParse = sutime.parse(data[2], reference_date=data[6])
         # # summaryParse = addTextType(summaryParse, "Summary")
         
-        details = data[3]
+        details = data["Detail"]
         lines = details.split('\n')
         del lines[-2]
         details = '\n'.join(lines)    
@@ -330,18 +330,18 @@ class parser():
             tags = sorted(tags, key=lambda x: x.weight, reverse=True)
             timeData["focusTime"] = tags[0].date.date().strftime('%Y-%m-%d')
         except:
-            timeData["focusTime"] = data[6]
+            timeData["focusTime"] = data["CreationDate"]
         
-        timeData["CreationDate"] = data[6]
+        timeData["CreationDate"] = data["CreationDate"]
 
         timeData["Header"] = dict()
-        timeData["Header"]["Text"] = data[1]
+        timeData["Header"]["Text"] = data["Header"]
         # timeData["Header"]["Tags"] = headerParse
         # # timeData["Header"]["Tags1"] = headerParse1
 
         
         timeData['Summary'] = dict()
-        timeData['Summary']["Text"] = data[2]
+        timeData['Summary']["Text"] = data["Summary"]
         # timeData['Summary']["Tags"] = summaryParse
         # # timeData['Summary']["Tags1"] = summaryParse1
         
@@ -350,8 +350,8 @@ class parser():
         # timeData['Details']["Tags"] = detailsParse
         # timeData['Details']["Tags1"] = detailsParse1
         
-        timeData['Link'] = data[4]
-        timeData['Category'] = data[5]
+        timeData['Link'] = data["Link"]
+        timeData['Category'] = data["Category"]
         return timeData
 
     # Main function which executes the get location to extract focus location
@@ -364,7 +364,7 @@ class parser():
             results = dict()
             city = self.read(dataframe)
             if city != "null":
-              results = self.Get_Time(list(df.loc[i]), results)
+              results = self.Get_Time(dataframe, results)
             results["focusLocation"] = city
             print("The Results from the parser:")
             print(results)
@@ -389,7 +389,7 @@ def main():
     result = rdd.map(Parser.informationExtractor)
     # Print final result
     print(result.collect())
-
+    # print(rows)
     spark.stop()
 
 main()
