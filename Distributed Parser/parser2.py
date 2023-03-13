@@ -20,7 +20,7 @@ import os
 from pyspark.sql import *
 from pyspark import *
 from dateparser.search import search_dates
-from timetag import TimeTag
+# from timetag import TimeTag
 
 '''
 Timetag is a tag that is extracted from the NEWS documents. 
@@ -367,8 +367,7 @@ class parser():
               results = self.Get_Time(dataframe, results)
             results["focusLocation"] = city
             print("The Results from the parser:")
-            print(results)
-            return city
+            return results
 
 
 def main():
