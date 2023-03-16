@@ -1,6 +1,6 @@
 # Get the bitnami spark image
 FROM bitnami/spark:latest
-
+USER root
 # Install Python libraries 
 COPY requirements.txt requirements.txt
 ARG src="Distributed Parser/Alldata_refined.csv" 
