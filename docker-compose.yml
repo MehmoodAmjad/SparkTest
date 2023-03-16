@@ -17,7 +17,7 @@ services:
       SPARK_WORKER_CORES: 4
       SPARK_WORKER_MEMORY: 4g
       SPARK_MASTER_URL: spark://spark-master:7077
- spark-worker-2:
+  spark-worker-2:
     image: my-spark-image
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     depends_on:
