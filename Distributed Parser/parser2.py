@@ -9,19 +9,16 @@ import spacy
 from fuzzywuzzy import fuzz
 import re
 import pandas as pd
-import glob
-import pathlib
-import json
 from datetime import datetime
 import datefinder
 import numpy as np
-import csv
-import os
 from pyspark.sql import *
 from pyspark import *
 from dateparser.search import search_dates
 # from timetag import TimeTag
-
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import NMF
+from sklearn.decomposition import LatentDirichletAllocation
 '''
 Timetag is a tag that is extracted from the NEWS documents. 
 Each timetag contains the weight and the values of the tag itself.
@@ -95,7 +92,50 @@ class parser():
         # Returning back the final string 
         return " ".join(final_token)
 
+    # Define a function to preprocess the text
+    def preprocess_text(self, text):
+        # Tokenize the text
+        tokens = text.lower().split()
+
+        # Remove stopwords
+        stopwords = set(['a', 'an', 'the', 'and', 'but', 'to', 'of', 'at', 'in', 'on', 'with', 'for', 'by', 'from'])
+        tokens = [token for token in tokens if token not in stopwords]
+
+        # Join the tokens back into a string
+        preprocessed_text = ' '.join(tokens)
+
+        return preprocessed_text
+
+    def Lda(self, articles, num_topics=1, num_words=1,max_df=0.90, min_df=1):
+        """Apply Non-negative Matrix Factorization to the articles and return the topics and weights"""
+        vectorizer = TfidfVectorizer(max_df=max_df, min_df=min_df,stop_words='english')
+        X = vectorizer.fit_transform(articles)
+        feature_names = vectorizer.get_feature_names_out()
+        lda = LatentDirichletAllocation(n_components=num_topics, max_iter=10, random_state=10).fit(X)
+        topics = []
+        for topic in enumerate(lda.components_):
+            topic_words = [feature_names[i] for i in topic.argsort()[:-num_words - 1:-1]]
+            topics.extend(topic_words)
+        return topics
+
+
+    def topic_model_nmf(self, articles, num_topics=1, num_words=1,max_df=0.90, min_df=1):
+        """Apply Non-negative Matrix Factorization to the articles and return the topics and weights"""
+        vectorizer = TfidfVectorizer(max_df=max_df, min_df=min_df,stop_words='english')
+        X = vectorizer.fit_transform(articles)
+        feature_names = vectorizer.get_feature_names_out()
+        nmf = NMF(n_components=num_topics, max_iter=1000, random_state=10).fit(X)
+        topics = []
+        for topic in enumerate(nmf.components_):
+            topic_words = [feature_names[i] for i in topic.argsort()[:-num_words - 1:-1]]
+            topics.extend(topic_words)
+        return topics
     
+    def extract_topics(self, details):
+        topics_nmf = self.topic_model_nmf(list(self.preprocess_text(details).split(" ")), num_topics=5, num_words=5)
+        topics_lda = self.Lda(list(self.preprocess_text(details).split(" ")), num_topics=5, num_words=5)
+        topics = [topic for topic in topics_lda if topic in topics_nmf]
+        return topics
     # Converting string into sentences 
     def sentences(self, text):
         # split sentences and questions
@@ -351,7 +391,7 @@ class parser():
         # timeData['Details']["Tags1"] = detailsParse1
         
         timeData['Link'] = data["Link"]
-        timeData['Category'] = data["Category"]
+        # timeData['Category'] = data["Category"]
         return timeData
 
     # Main function which executes the get location to extract focus location
@@ -364,9 +404,10 @@ class parser():
             results = dict()
             city = self.read(dataframe)
             if city != "null":
-              results = self.Get_Time(dataframe, results)
-            results["focusLocation"] = city
-            print("The Results from the parser:")
+                results = self.Get_Time(dataframe, results)
+                results["focusLocation"] = city
+                results["Category"] = self.extract_topics(dataframe["Detail"])
+                print("The Results from the parser:")
             return results
 
 
