@@ -113,7 +113,7 @@ class parser():
         feature_names = vectorizer.get_feature_names_out()
         lda = LatentDirichletAllocation(n_components=num_topics, max_iter=10, random_state=10).fit(X)
         topics = []
-        for topic in enumerate(lda.components_):
+        for topic_idx, topic in enumerate(lda.components_):
             topic_words = [feature_names[i] for i in topic.argsort()[:-num_words - 1:-1]]
             topics.extend(topic_words)
         return topics
@@ -126,7 +126,7 @@ class parser():
         feature_names = vectorizer.get_feature_names_out()
         nmf = NMF(n_components=num_topics, max_iter=1000, random_state=10).fit(X)
         topics = []
-        for topic in enumerate(nmf.components_):
+        for topic_idx, topic in enumerate(nmf.components_):
             topic_words = [feature_names[i] for i in topic.argsort()[:-num_words - 1:-1]]
             topics.extend(topic_words)
         return topics
