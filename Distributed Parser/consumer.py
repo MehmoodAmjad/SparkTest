@@ -19,7 +19,7 @@ class Consumer():
     # Function to display the data received by the consumer
     def Receive(self):
         for msg in self.consumer:
-            os.system("sudo docker exec -it spark-master-1 spark-submit --master spark://172.0.18.2:7077 parser.py")
+            os.system("sudo docker exec sparktest-spark-master-1 spark-submit --master spark://172.18.0.2:7077 parser.py")
 # Main function which creates the consumer and calls the receive function
 def main():
     cons_obj = Consumer()
