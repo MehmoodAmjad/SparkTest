@@ -26,8 +26,8 @@ class Consumer():
                 writer = csv.writer(file)
                 writer.writerows(data)
             os.system("sudo docker cp -L received_file.csv sparktest_spark-master_1:/opt/bitnami/spark/islamabad.csv")
-            os.system("sudo docker cp -L received_file.csv sparktest_spark-worker-1_1:/opt/bitnami/spark/islamabad.csv")
-            os.system("sudo docker cp -L received_file.csv sparktest_spark-worker-2_1:/opt/bitnami/spark/islamabad.csv")
+            # os.system("sudo docker cp -L received_file.csv sparktest_spark-worker-1_1:/opt/bitnami/spark/islamabad.csv")
+            # os.system("sudo docker cp -L received_file.csv sparktest_spark-worker-2_1:/opt/bitnami/spark/islamabad.csv")
             os.system("sudo docker exec sparktest_spark-master_1 spark-submit --master spark://172.19.0.2:7077 parser.py")
         # for msg in self.consumer:
         #     os.system("sudo docker exec sparktest-spark-master-1 spark-submit --master spark://172.18.0.2:7077 parser.py")
