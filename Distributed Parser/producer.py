@@ -34,10 +34,8 @@ class Producer():
             file_content = '\n'.join([','.join(row) for row in reader]).encode('utf-8')
 
         # Send the file as a message to the Kafka topic
+        print(file_content)
         producer.send(topic_name, file_content)
-        for j in range(10):
-            print("Iteration", j)
-            
 # Main function which creates the producer object and calss the function to send data
 def main():
     prod_obj = Producer()
