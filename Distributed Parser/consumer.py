@@ -8,11 +8,11 @@ import os
 class Consumer():
     # Initialize the comsumer with the kafka consumer port and topic
     def __init__(self):
-        consumer = KafkaConsumer('my-topic', bootstrap_servers=['localhost:9092'])
+        self.consumer = KafkaConsumer('my-topic', bootstrap_servers=['localhost:9092'])
 
     # Function to display the data received by the consumer
     def Receive(self):
-        for message in consumer:
+        for message in self.consumer:
             # Get the message value (which is the file content)
             file_content = message.value
             # Parse the CSV data
