@@ -16,7 +16,8 @@ class Consumer():
             # Get the message value (which is the file content)
             file_content = message.value
             # Parse the CSV data
-            rows = file_content.decode('utf-8').split('\n')
+            # rows = file_content.decode('utf-8').split('\n')
+            rows = file_content.split('\n')
             data = [row.split(',') for row in rows]
             print(rows)
             # Save the CSV data to a local file

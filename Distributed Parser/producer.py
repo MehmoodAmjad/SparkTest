@@ -31,7 +31,7 @@ class Producer():
             reader = csv.reader(file)
             # Converting the file as list of lists
             # We're also encoding the CSV data as UTF-8 strings to ensure that non-ASCII characters are handled properly.
-            file_content = '\n'.join([','.join(row) for row in reader]).encode('utf-8')
+            file_content = '\n'.join([','.join(row) for row in reader])#.encode('utf-8')
 
         # Send the file as a message to the Kafka topic
         print(file_content)
