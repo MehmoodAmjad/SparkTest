@@ -1,6 +1,7 @@
 from kafka import KafkaConsumer
 from json import loads
 import os
+import csv
 # # Receives from producer after every 2 seconds
 # consumer.poll(timeout_ms=2000)
 
