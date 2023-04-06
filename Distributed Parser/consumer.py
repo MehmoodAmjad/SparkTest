@@ -20,7 +20,7 @@ class Consumer():
             rows = file_content.decode('utf-8').split('\n')
             # rows = file_content.split('\n')
             data = [row.split(',') for row in rows]
-            print(rows)
+            # print(rows)
             # Save the CSV data to a local file
             with open('received_file.csv', 'w', newline='') as file:
                 writer = csv.writer(file)
