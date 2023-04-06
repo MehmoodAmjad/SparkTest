@@ -3,7 +3,7 @@ from time import sleep
 from json import dumps
 from json import load
 from kafka import KafkaProducer
-
+import csv
 
 # A producer class defiend to perform the functionalities of Kafka Producer
 class Producer():
