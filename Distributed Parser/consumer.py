@@ -9,7 +9,7 @@ import csv
 class Consumer():
     # Initialize the comsumer with the kafka consumer port and topic
     def __init__(self):
-        self.consumer = KafkaConsumer('topic_test1', bootstrap_servers=['localhost:9092'])
+        self.consumer = KafkaConsumer('topic_test1', bootstrap_servers=['localhost:9092'],value_deserializer=lambda x: loads(x.decode('utf-8')))
 
     # Function to display the data received by the consumer
     def Receive(self):
@@ -17,7 +17,8 @@ class Consumer():
             # Get the message value (which is the file content)
             file_content = message.value
             # Parse the CSV data
-            rows = file_content.decode('utf-8').split('\n')
+            rows = file_content.split('\n')
+            # rows = file_content.decode('utf-8').split('\n')
             # rows = file_content.split('\n')
             data = [row.split(',') for row in rows]
             # print(rows)
