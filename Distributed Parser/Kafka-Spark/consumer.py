@@ -15,17 +15,16 @@ class Consumer():
     def Receive(self):
         for message in self.consumer:
             # Get the message value (which is the file content)
-            file_content = message.value
-            # Parse the CSV data
-            rows = file_content.split('\n')
-            # rows = file_content.decode('utf-8').split('\n')
+            # file_content = message.value
+            # # Parse the CSV data
             # rows = file_content.split('\n')
-            data = [row.split(',') for row in rows]
+            # # rows = file_content.decode('utf-8').split('\n')
+            # # rows = file_content.split('\n')
+            # data = [row.split(',') for row in rows]
             # print(rows)
             # Save the CSV data to a local file
             with open('received_file.csv', 'w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerows(data)
+                 file.write(message.value)
             os.system("sudo docker cp -L received_file.csv sparktest_spark-master_1:/opt/bitnami/spark/islamabad.csv")
             # os.system("sudo docker cp -L received_file.csv sparktest_spark-worker-1_1:/opt/bitnami/spark/islamabad.csv")
             # os.system("sudo docker cp -L received_file.csv sparktest_spark-worker-2_1:/opt/bitnami/spark/islamabad.csv")
