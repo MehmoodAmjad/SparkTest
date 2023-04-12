@@ -23,19 +23,19 @@ class Producer():
         #     # print(type(data))
         #     # print(data)
         #     # print(data["Header"])
+        path = '2022-12-30'
         topic_name = 'topic_test1'
-        file_path = 'islamabad.csv'
+        for file_path in os.listdir(path):
+            # Open the file and read the contents
+            with open(file_path, 'r') as file:
+                reader = file.read()
+                # Converting the file as list of lists
+                # We're also encoding the CSV data as UTF-8 strings to ensure that non-ASCII characters are handled properly.
+                # file_content = '\n'.join([','.join(row) for row in reader])#.encode('utf-8')
 
-        # Open the file and read the contents
-        with open(file_path, 'r') as file:
-            reader = file.read()
-            # Converting the file as list of lists
-            # We're also encoding the CSV data as UTF-8 strings to ensure that non-ASCII characters are handled properly.
-            # file_content = '\n'.join([','.join(row) for row in reader])#.encode('utf-8')
-
-        # Send the file as a message to the Kafka topic
-        print(reader)
-        self.producer.send(topic_name, reader)
+            # Send the file as a message to the Kafka topic
+            print(reader)
+            self.producer.send(topic_name, reader)
 # Main function which creates the producer object and calss the function to send data
 def main():
     prod_obj = Producer()
