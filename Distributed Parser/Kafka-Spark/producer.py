@@ -27,7 +27,7 @@ class Producer():
         topic_name = 'topic_test1'
         for file_path in os.listdir(path):
             # Open the file and read the contents
-            with open(file_path, 'r') as file:
+            with open(path+"/"+file_path, 'r') as file:
                 reader = file.read()
                 # Converting the file as list of lists
                 # We're also encoding the CSV data as UTF-8 strings to ensure that non-ASCII characters are handled properly.
