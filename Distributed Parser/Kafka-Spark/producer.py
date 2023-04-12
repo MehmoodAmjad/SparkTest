@@ -4,7 +4,7 @@ from json import dumps
 from json import load
 from kafka import KafkaProducer
 import csv
-
+import os
 # A producer class defiend to perform the functionalities of Kafka Producer
 class Producer():
     # Initialize the producer with Kafka Producer using port
