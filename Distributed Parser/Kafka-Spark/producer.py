@@ -26,7 +26,7 @@ class Producer():
         #     # print(data["Header"])
         path = '2022-12-30'
         topic_name = 'topic_test1'
-        for file_path in glob.iglob(r'2023/*.csv'):
+        for file_path in glob.iglob(r'2023/**/*.csv'):
             # Open the file and read the contents
             with open(file_path, 'r') as file:
                 reader = file.read()
