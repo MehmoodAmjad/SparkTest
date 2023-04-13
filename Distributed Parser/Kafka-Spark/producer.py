@@ -4,6 +4,7 @@ from json import dumps
 from json import load
 from kafka import KafkaProducer
 import csv
+import glob
 import os
 # A producer class defiend to perform the functionalities of Kafka Producer
 class Producer():
@@ -25,9 +26,9 @@ class Producer():
         #     # print(data["Header"])
         path = '2022-12-30'
         topic_name = 'topic_test1'
-        for file_path in os.listdir(path):
+        for file_path in glob.iglob(r'2023/*.csv'):
             # Open the file and read the contents
-            with open(path+"/"+file_path, 'r') as file:
+            with open(file_path, 'r') as file:
                 reader = file.read()
                 # Converting the file as list of lists
                 # We're also encoding the CSV data as UTF-8 strings to ensure that non-ASCII characters are handled properly.
