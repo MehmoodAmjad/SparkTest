@@ -13,6 +13,7 @@ class Consumer():
 
     # Function to display the data received by the consumer
     def Receive(self):
+        count = 0
         for message in self.consumer:
             # Get the message value (which is the file content)
             # file_content = message.value
@@ -23,12 +24,21 @@ class Consumer():
             # data = [row.split(',') for row in rows]
             # print(rows)
             # Save the CSV data to a local file
+            count+=1
+            print("============================================================")
+            print("Getting Data from Producer, iteration # ",count)
+            print("============================================================")
             with open('received_file.csv', 'w', newline='') as file:
                  file.write(message.value)
+            print("Starting Spark Execution")
+            print("============================================================")
             os.system("sudo docker cp -L received_file.csv sparktest_spark-master_1:/opt/bitnami/spark/islamabad.csv")
             # os.system("sudo docker cp -L received_file.csv sparktest_spark-worker-1_1:/opt/bitnami/spark/islamabad.csv")
             # os.system("sudo docker cp -L received_file.csv sparktest_spark-worker-2_1:/opt/bitnami/spark/islamabad.csv")
             os.system("sudo docker exec sparktest_spark-master_1 spark-submit --master spark://172.19.0.2:7077 parser.py")
+            print("============================================================")
+            print("End of Spark Execution for iteration # ",count)
+            print("============================================================")
         # for msg in self.consumer:
         #     os.system("sudo docker exec sparktest-spark-master-1 spark-submit --master spark://172.18.0.2:7077 parser.py")
 # Main function which creates the consumer and calls the receive function
