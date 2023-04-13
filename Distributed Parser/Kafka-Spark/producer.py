@@ -41,6 +41,7 @@ class Producer():
             print(file_path)
             print("============================================================")
             self.producer.send(topic_name, reader)
+            sleep(1)
             count+=1
 # Main function which creates the producer object and calss the function to send data
 def main():
