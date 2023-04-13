@@ -24,8 +24,8 @@ class Producer():
         #     # print(type(data))
         #     # print(data)
         #     # print(data["Header"])
-        path = '2022-12-30'
         topic_name = 'topic_test1'
+        count = 0
         for file_path in glob.iglob(r'2023/**/*.csv'):
             # Open the file and read the contents
             with open(file_path, 'r') as file:
@@ -35,8 +35,13 @@ class Producer():
                 # file_content = '\n'.join([','.join(row) for row in reader])#.encode('utf-8')
 
             # Send the file as a message to the Kafka topic
-            print(reader)
+            # print(reader)
+            print("============================================================")
+            print("Sending Scrapped Data to Consumer, iteration # ",count)
+            print(file_path)
+            print("============================================================")
             self.producer.send(topic_name, reader)
+            count+=1
 # Main function which creates the producer object and calss the function to send data
 def main():
     prod_obj = Producer()
